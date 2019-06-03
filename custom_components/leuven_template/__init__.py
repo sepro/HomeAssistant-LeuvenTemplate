@@ -1,0 +1,1 @@
+"""Leuven Template component for Home Assistant"""
