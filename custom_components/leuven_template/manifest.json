@@ -1,0 +1,8 @@
+{
+  "domain": "leuven_template",
+  "name": "Leuven Template",
+  "documentation": "https://github.com/sepro/HomeAssistant-LeuvenTemplate",
+  "dependencies": [],
+  "codeowners": [],
+  "requirements": []
+}
