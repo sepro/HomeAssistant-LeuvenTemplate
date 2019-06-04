@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Leuven-Template  Meteobridge 3.9 -->
+<!-- YOWINDOW XML - PWS SPECS yowindowRT.php - 3.10 2014-01.26 -->
+<response>
+    <current_weather>
+        <auto_update><interval value="60"/></auto_update>
+        <temperature unit="c">
+                <current value="25.3"/>
+        </temperature>
+        <humidity value="47.0"/>
+        <pressure value="1000.9" unit="hpa"/>
+        <wind>
+                <speed value="1.4" unit="kph"/>
+                <gusts value="6.5" unit="kph"/>
+                <direction value="111.0"/>
+        </wind>
+        <sky>
+            <precipitation>
+                  <rain>
+                        <rate        value="0" unit="mm"/>
+                        <daily_total value="0" unit="mm"/>
+                  </rain>
+            </precipitation>
+        </sky>
+        <uv value="0.0"/>
+        <solar radiation="12.0" />
+    </current_weather>
+</response>
