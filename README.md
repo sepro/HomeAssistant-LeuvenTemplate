@@ -5,7 +5,21 @@ Home-Assistant component to get weather data from weather-stations that use mete
 
 ## Configuration
 
-## How it works
+You need to find the URL to *yowindowRT.php* for the desired website, in the config below the example is given for 
+a weather station located in Herent and in Sluispark Leuven, Belgium. By selecting a unique prefix, multiple sources
+can be used. 
+
+Add the code below to *configuration.yaml* in your .homeassistant directory
+```yaml
+sensor:
+  - platform: leuven_template
+    url: "https://www.weerstation-herent.be/weather2/yowindowRT.php"
+    prefix: "herent"
+    
+    - platform: leuven_template
+    url: "https://weer.sluispark.be/yowindowRT.php"
+    prefix: "sluispark"
+```
 
 
 ## Links & Further Reading

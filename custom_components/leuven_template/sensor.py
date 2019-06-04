@@ -5,11 +5,15 @@ import aiohttp
 import logging
 from datetime import timedelta
 
+import voluptuous as vol
+
+from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import TEMP_CELSIUS
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import async_track_point_in_utc_time
 from homeassistant.util import dt as dt_util
+import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -20,33 +24,42 @@ SCHEDULE_OK = 1
 # When an error occurred, new call after (minutes): Should be 2
 SCHEDULE_NOK = 1
 
-CONF_URL = 'https://www.weerstation-herent.be/weather2/yowindowRT.php'
+CONF_URL = 'url'
+CONF_PREFIX = 'prefix'
+
+PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
+    vol.Optional(CONF_PREFIX, default='lt_'): cv.string,
+    vol.Required(CONF_URL): cv.string,
+})
 
 
 async def async_setup_platform(hass, config, async_add_entities,
                                discovery_info=None):
     _LOGGER.debug("Initializing Leuven Template")
     print("Initializing Leuven Template")
-    
+
+    url = config.get(CONF_URL)
+    prefix = config.get(CONF_PREFIX)
+
     devices = [
-        LeuvenTemplateSensor('Humidity', '%', 'mdi:water-percent'),
-        LeuvenTemplateSensor('Temperature', TEMP_CELSIUS, 'mdi:thermometer'),
-        LeuvenTemplateSensor('Pressure', 'hPa', 'mdi:gauge'),
+        LeuvenTemplateSensor('Humidity', '%', 'mdi:water-percent', prefix),
+        LeuvenTemplateSensor('Temperature', TEMP_CELSIUS, 'mdi:thermometer', prefix),
+        LeuvenTemplateSensor('Pressure', 'hPa', 'mdi:gauge', prefix),
 
-        LeuvenTemplateSensor('Wind speed', 'kph', 'mdi:weather-windy'),
-        LeuvenTemplateSensor('Wind gust', 'kph', 'mdi:weather-windy'),
-        LeuvenTemplateSensor('Wind direction', None, 'mdi:compass-outline'),
+        LeuvenTemplateSensor('Wind speed', 'kph', 'mdi:weather-windy', prefix),
+        LeuvenTemplateSensor('Wind gust', 'kph', 'mdi:weather-windy', prefix),
+        LeuvenTemplateSensor('Wind direction', None, 'mdi:compass-outline', prefix),
 
-        LeuvenTemplateSensor('Precipitation rate', 'mm', 'mdi:weather-pouring'),
-        LeuvenTemplateSensor('Precipitation total', 'mm', 'mdi:weather-pouring'),
+        LeuvenTemplateSensor('Precipitation rate', 'mm', 'mdi:weather-pouring', prefix),
+        LeuvenTemplateSensor('Precipitation total', 'mm', 'mdi:weather-pouring', prefix),
 
-        LeuvenTemplateSensor('UV', None, 'mdi:sunglasses'),
-        LeuvenTemplateSensor('Solar radiation', 'W/m2', 'mdi:sunglasses')
+        LeuvenTemplateSensor('UV', None, 'mdi:sunglasses', prefix),
+        LeuvenTemplateSensor('Solar radiation', 'W/m2', 'mdi:sunglasses', prefix)
     ]
 
     async_add_entities(devices)
 
-    data = LeuvenTemplateData(hass, devices)
+    data = LeuvenTemplateData(hass, devices, url)
     await data.schedule_update(1)
 
 
@@ -112,10 +125,11 @@ def process_xml(xml_data):
 
 class LeuvenTemplateData:
 
-    def __init__(self, hass, devices):
+    def __init__(self, hass, devices, url):
         self.hass = hass
         self.devices = devices
         self.data = {}
+        self.url = url
 
     async def update_devices(self):
         """Update all devices/sensors."""
@@ -164,7 +178,7 @@ class LeuvenTemplateData:
 
     async def async_update(self, *_):
         """Update the data from a website using the Leuven Template."""
-        lt_content = await self.get_data(CONF_URL)
+        lt_content = await self.get_data(self.url)
 
         if lt_content.get('SUCCESS') is not True:
             # unable to get the data
@@ -185,17 +199,18 @@ class LeuvenTemplateData:
 class LeuvenTemplateSensor(Entity):
     """Representation of a Sensor."""
 
-    def __init__(self, name, unit, icon):
+    def __init__(self, name, unit, icon, prefix):
         """Initialize the sensor."""
         self._state = None
         self._name = name
         self._unit = unit
         self._icon = icon
+        self._prefix = prefix
 
     @property
     def name(self):
         """Return the name of the sensor."""
-        return 'lt ' + self._name
+        return self._prefix + self._name
 
     @property
     def state(self):
