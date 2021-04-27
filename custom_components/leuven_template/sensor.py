@@ -8,7 +8,7 @@ from datetime import timedelta
 import voluptuous as vol
 
 from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.const import TEMP_CELSIUS
+from homeassistant.const import TEMP_CELSIUS, DEGREE, PRESSURE_HPA, UV_INDEX, IRRADIATION_WATTS_PER_SQUARE_METER, PERCENTAGE, SPEED_KILOMETERS_PER_HOUR, PRECIPITATION_MILLIMETERS_PER_HOUR, LENGTH_MILLIMETERS
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import async_track_point_in_utc_time
@@ -20,9 +20,9 @@ _LOGGER = logging.getLogger(__name__)
 DOMAIN = 'leuven_template'
 
 # Schedule next call after (minutes): Should be 10
-SCHEDULE_OK = 1
+SCHEDULE_OK = 10
 # When an error occurred, new call after (minutes): Should be 2
-SCHEDULE_NOK = 1
+SCHEDULE_NOK = 2
 
 CONF_URL = 'url'
 CONF_PREFIX = 'prefix'
@@ -42,19 +42,19 @@ async def async_setup_platform(hass, config, async_add_entities,
     prefix = config.get(CONF_PREFIX)
 
     devices = [
-        LeuvenTemplateSensor('Humidity', '%', 'mdi:water-percent', prefix),
+        LeuvenTemplateSensor('Humidity', PERCENTAGE, 'mdi:water-percent', prefix),
         LeuvenTemplateSensor('Temperature', TEMP_CELSIUS, 'mdi:thermometer', prefix),
-        LeuvenTemplateSensor('Pressure', 'hPa', 'mdi:gauge', prefix),
+        LeuvenTemplateSensor('Pressure', PRESSURE_HPA, 'mdi:gauge', prefix),
 
-        LeuvenTemplateSensor('Wind speed', 'kph', 'mdi:weather-windy', prefix),
-        LeuvenTemplateSensor('Wind gust', 'kph', 'mdi:weather-windy', prefix),
-        LeuvenTemplateSensor('Wind direction', None, 'mdi:compass-outline', prefix),
+        LeuvenTemplateSensor('Wind speed', SPEED_KILOMETERS_PER_HOUR, 'mdi:weather-windy', prefix),
+        LeuvenTemplateSensor('Wind gust', SPEED_KILOMETERS_PER_HOUR, 'mdi:weather-windy', prefix),
+        LeuvenTemplateSensor('Wind direction', DEGREE, 'mdi:compass-outline', prefix),
 
-        LeuvenTemplateSensor('Precipitation rate', 'mm', 'mdi:weather-pouring', prefix),
-        LeuvenTemplateSensor('Precipitation total', 'mm', 'mdi:weather-pouring', prefix),
+        LeuvenTemplateSensor('Precipitation rate', PRECIPITATION_MILLIMETERS_PER_HOUR, 'mdi:weather-pouring', prefix),
+        LeuvenTemplateSensor('Precipitation total', LENGTH_MILLIMETERS, 'mdi:weather-pouring', prefix),
 
-        LeuvenTemplateSensor('UV', None, 'mdi:sunglasses', prefix),
-        LeuvenTemplateSensor('Solar radiation', 'W/m2', 'mdi:sunglasses', prefix)
+        LeuvenTemplateSensor('UV', UV_INDEX, 'mdi:sunglasses', prefix),
+        LeuvenTemplateSensor('Solar radiation', IRRADIATION_WATTS_PER_SQUARE_METER, 'mdi:sunglasses', prefix)
     ]
 
     async_add_entities(devices)
