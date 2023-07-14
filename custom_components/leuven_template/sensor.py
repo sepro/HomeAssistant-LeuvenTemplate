@@ -138,10 +138,14 @@ class LeuvenTemplateData:
             # Update all devices
             for dev in self.devices:
                 if dev.load_data(self.data):
-                    tasks.append(dev.async_update_ha_state())
+                    tasks.append(dev.async_write_ha_state())
 
-            if tasks:
-                await asyncio.wait(tasks)
+
+            loop = asyncio.get_event_loop()
+            task_list = [loop.create_task(task) for task in tasks if task is not None]
+            
+            if task_list:
+                await asyncio.wait(task_list)
 
     async def schedule_update(self, minute=1):
         """Schedule an update after minute minutes."""
