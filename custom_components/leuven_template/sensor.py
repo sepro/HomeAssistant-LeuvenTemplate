@@ -8,7 +8,7 @@ from datetime import timedelta
 import voluptuous as vol
 
 from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.const import TEMP_CELSIUS, DEGREE, PRESSURE_HPA, UV_INDEX, IRRADIATION_WATTS_PER_SQUARE_METER, PERCENTAGE, SPEED_KILOMETERS_PER_HOUR, PRECIPITATION_MILLIMETERS_PER_HOUR, LENGTH_MILLIMETERS
+from homeassistant.const import UnitOfTemperature, UnitOfPressure,UnitOfIrradiance, UnitOfSpeed, UnitOfVolumetricFlux, UnitOfLength, PERCENTAGE, DEGREE, UV_INDEX
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import async_track_point_in_utc_time
@@ -43,18 +43,18 @@ async def async_setup_platform(hass, config, async_add_entities,
 
     devices = [
         LeuvenTemplateSensor('Humidity', PERCENTAGE, 'mdi:water-percent', prefix),
-        LeuvenTemplateSensor('Temperature', TEMP_CELSIUS, 'mdi:thermometer', prefix),
-        LeuvenTemplateSensor('Pressure', PRESSURE_HPA, 'mdi:gauge', prefix),
+        LeuvenTemplateSensor('Temperature', UnitOfTemperature.CELSIUS, 'mdi:thermometer', prefix),
+        LeuvenTemplateSensor('Pressure', UnitOfPressure.HPA, 'mdi:gauge', prefix),
 
-        LeuvenTemplateSensor('Wind speed', SPEED_KILOMETERS_PER_HOUR, 'mdi:weather-windy', prefix),
-        LeuvenTemplateSensor('Wind gust', SPEED_KILOMETERS_PER_HOUR, 'mdi:weather-windy', prefix),
+        LeuvenTemplateSensor('Wind speed', UnitOfSpeed.KILOMETERS_PER_HOUR, 'mdi:weather-windy', prefix),
+        LeuvenTemplateSensor('Wind gust', UnitOfSpeed.KILOMETERS_PER_HOUR, 'mdi:weather-windy', prefix),
         LeuvenTemplateSensor('Wind direction', DEGREE, 'mdi:compass-outline', prefix),
 
-        LeuvenTemplateSensor('Precipitation rate', PRECIPITATION_MILLIMETERS_PER_HOUR, 'mdi:weather-pouring', prefix),
-        LeuvenTemplateSensor('Precipitation total', LENGTH_MILLIMETERS, 'mdi:weather-pouring', prefix),
+        LeuvenTemplateSensor('Precipitation rate', UnitOfVolumetricFlux.MILLIMETERS_PER_HOUR, 'mdi:weather-pouring', prefix),
+        LeuvenTemplateSensor('Precipitation total', UnitOfLength.MILLIMETERS, 'mdi:weather-pouring', prefix),
 
         LeuvenTemplateSensor('UV', UV_INDEX, 'mdi:sunglasses', prefix),
-        LeuvenTemplateSensor('Solar radiation', IRRADIATION_WATTS_PER_SQUARE_METER, 'mdi:sunglasses', prefix)
+        LeuvenTemplateSensor('Solar radiation', UnitOfIrradiance.WATTS_PER_SQUARE_METER, 'mdi:sunglasses', prefix)
     ]
 
     async_add_entities(devices)
